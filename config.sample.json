@@ -1,0 +1,5 @@
+{
+    "user": "MYSQL_USER",
+    "password": "MYSQL_PASSWORD",
+    "database": "Weatherbook"
+}

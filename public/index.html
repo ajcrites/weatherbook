@@ -1,0 +1,46 @@
+<meta charset=utf-8>
+<title>Weatherbook</title>
+<link rel=stylesheet type=text/css href=index.css>
+
+<div ng-app=weatherbook ng-cloak>
+    <h1>Welcome to Weatherbook</h1>
+
+    <section ng-controller=DirectoryCtrl>
+        <ol>
+            <li ng-repeat="letter in letters" ng-class="{enabled: addresses.filterAddresses(letter).length}">
+                {{letter}}
+            </li>
+        </ol>
+    </section>
+
+    <section ng-controller=AddressCtrl>
+        <div ng-show="addresses.addresses.length == 0 && state == 'home'">
+            <p>
+                You don't have any addresses yet :(
+            </p>
+            <p ng-click="state = 'adding'">
+                Add Addresses Now
+            </p>
+        </div>
+
+        <div ng-show="state == 'adding'" ng-controller="AddressAddCtrl">
+            <label>
+                <span>First Name</span>
+                <input type=text required ng-model=firstName>
+            </label>
+            <label>
+                <span>Last Name</span>
+                <input type=text required ng-model=lastName>
+            </label>
+            <label>
+                <span>Address</span>
+                <input type=text required ng-model=address>
+            </label>
+            <input type=submit ng-click="addAddress()">
+        </div>
+    </section>
+</div>
+
+<script src=//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js></script>
+<script src=//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js></script>
+<script src=index.js></script>

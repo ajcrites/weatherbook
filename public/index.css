@@ -1,0 +1,6 @@
+[ng-cloak] {
+    display: none !important;
+}
+.enabled {
+    color: red;
+}

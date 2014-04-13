@@ -14,7 +14,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 server = http.createServer(app);
 
-io = io.listen(server);
+io = io.listen(server, {log: false});
 
 server.listen(process.env.PORT || 3000);
 
@@ -39,6 +39,38 @@ app.post("/weatherbook", function (req, res) {
                 lastName: data.lastName,
                 address: data.address
             });
+        });
+});
+
+app.delete("/weatherbook/:wbID", function (req, res) {
+    console.log(req.params.wbID);
+    db.query("DELETE FROM Weatherbook WHERE wbID = ?", [req.params.wbID], function (err, data) {
+        if (err) {
+            res.writeHead(400);
+        }
+        else {
+            res.writeHead(200);
+        }
+
+        res.end();
+
+        io.sockets.emit("address-updated", req.params.wbID);
+    });
+});
+
+app.patch("/weatherbook", function (req, res) {
+    db.query("UPDATE Weatherbook SET firstName = ?, lastName = ?, address = ? WHERE wbID = ?",
+        [req.body.firstName, req.body.lastName, req.body.address, req.body.wbID], function (err, data) {
+            if (err) {
+                res.writeHead(400);
+            }
+            else {
+                res.writeHead(200);
+                console.log(data);
+            }
+
+            res.end();
+            io.sockets.emit("address-removed", req.params.wbID);
         });
 });
 

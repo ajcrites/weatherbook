@@ -1,5 +1,21 @@
 var socket = io.connect("//" + window.location.host),
-    app = angular.module("weatherbook", []);
+    app = angular.module("weatherbook", ["ngAnimate"]);
+
+function removeAddress(wbID) {
+    var self = this;
+
+    self.addresses.forEach(function (addr, idx) {
+        if (addr.wbID === wbID) {
+            self.addresses.splice(idx, 1);
+        }
+    });
+}
+
+app.service("revealedAddresses", function () {
+    this.addresses = [];
+
+    this.removeAddress = removeAddress;
+});
 
 app.service("addresses", [function () {
     this.addresses = [];
@@ -13,10 +29,13 @@ app.service("addresses", [function () {
         });
         return filtered;
     };
+
+    this.removeAddress = removeAddress;
 }]);
 
-app.controller("AddressCtrl",["$rootScope", "$scope", "addresses", function ($rootScope, $scope, addresses) {
+app.controller("AddressCtrl",["$scope", "$http", "addresses", "revealedAddresses", function ($scope, $http, addresses, revealedAddresses) {
     $scope.addresses = addresses;
+    $scope.revealedAddresses = revealedAddresses;
     $scope.state = "home";
 
     socket.on("init-book", function (addresses) {
@@ -24,6 +43,17 @@ app.controller("AddressCtrl",["$rootScope", "$scope", "addresses", function ($ro
             $scope.addresses.addresses = addresses;
         });
     });
+
+    $scope.removeAddress = function (wbID) {
+        $http.delete("/weatherbook/" + wbID).success(function () {
+            revealedAddresses.removeAddress(wbID);
+            addresses.removeAddress(wbID);
+
+            if (!revealedAddresses.addresses.length) {
+                $scope.state = "home";
+            }
+        });
+    };
 }]);
 
 app.controller("AddressAddCtrl", ["$scope", "$http", "addresses", function ($scope, $http, addresses) {
@@ -39,11 +69,15 @@ app.controller("AddressAddCtrl", ["$scope", "$http", "addresses", function ($sco
                 lastName: $scope.lastName,
                 address: $scope.address
             });
+
+            $scope.firstName = "";
+            $scope.lastName = "";
+            $scope.address = "";
         });
     };
 }]);
 
-app.controller("DirectoryCtrl", ["$scope", "addresses", function ($scope, addresses) {
+app.controller("DirectoryCtrl", ["$scope", "addresses", "revealedAddresses", function ($scope, addresses, revealedAddresses) {
     var x;
 
     $scope.letters = [];
@@ -53,5 +87,12 @@ app.controller("DirectoryCtrl", ["$scope", "addresses", function ($scope, addres
     }
 
     $scope.addresses = addresses;
+
+    $scope.revealAddresses = function (letter) {
+        var filtered = addresses.filterAddresses(letter);
+        if (filtered.length) {
+            revealedAddresses.addresses = filtered;
+        }
+    };
 }]);
 

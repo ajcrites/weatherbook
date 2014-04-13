@@ -7,14 +7,15 @@
 
     <section ng-controller=DirectoryCtrl>
         <ol>
-            <li ng-repeat="letter in letters" ng-class="{enabled: addresses.filterAddresses(letter).length}">
+            <li ng-repeat="letter in letters" ng-class="{enabled: addresses.filterAddresses(letter).length}"
+                ng-click="revealAddresses(letter)">
                 {{letter}}
             </li>
         </ol>
     </section>
 
     <section ng-controller=AddressCtrl>
-        <div ng-show="addresses.addresses.length == 0 && state == 'home'">
+        <div ng-show="addresses.addresses.length == 0 && state == 'home'" class="animate-show">
             <p>
                 You don't have any addresses yet :(
             </p>
@@ -22,8 +23,26 @@
                 Add Addresses Now
             </p>
         </div>
+        <div ng-show="addresses.addresses.length && revealedAddresses.addresses.length == 0 && state == 'home'" class="animate-show">
+            <p>
+                Click on a letter to display the addresses and weather
+                for people whose last name starts with that letter.
+            </p>
+            <p ng-click="state = 'adding'">
+                Add More Addresses
+            </p>
+        </div>
 
-        <div ng-show="state == 'adding'" ng-controller="AddressAddCtrl">
+        <div ng-show="revealedAddresses.addresses.length" class="animate-show">
+            <address ng-repeat="addr in revealedAddresses.addresses">
+                {{addr.firstName}}
+                {{addr.lastName}}
+                {{addr.address}}
+                <button ng-click="removeAddress(addr.wbID)">Remove this address</button>
+            </address>
+        </div>
+
+        <div ng-show="state == 'adding' && revealedAddresses.addresses.length == 0" ng-controller="AddressAddCtrl" class="animate-show">
             <label>
                 <span>First Name</span>
                 <input type=text required ng-model=firstName>
@@ -43,4 +62,5 @@
 
 <script src=//cdnjs.cloudflare.com/ajax/libs/socket.io/0.9.16/socket.io.min.js></script>
 <script src=//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js></script>
+<script src=//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular-animate.js></script>
 <script src=index.js></script>

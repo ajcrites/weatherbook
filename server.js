@@ -53,7 +53,7 @@ app.delete("/weatherbook/:wbID", function (req, res) {
 
         res.end();
 
-        io.sockets.emit("address-updated", req.params.wbID);
+        io.sockets.emit("address-removed", req.params.wbID);
     });
 });
 
@@ -65,11 +65,10 @@ app.patch("/weatherbook", function (req, res) {
             }
             else {
                 res.writeHead(200);
-                console.log(data);
             }
 
             res.end();
-            io.sockets.emit("address-removed", req.params.wbID);
+            io.sockets.emit("address-updated", req.body);
         });
 });
 

@@ -2,6 +2,7 @@ body {
     margin: 0;
     margin-left: 50px;
     font-family: "Helvetica Neue", sans-serif;
+    background: url(http://hdwallpapersx.com/wp-content/uploads/2013/12/Weather-9.jpg);
 }
 [ng-cloak] {
     display: none !important;
@@ -34,7 +35,7 @@ body {
 .directory li {
     width: 30px;
     text-align: center;
-    background-color: rgba(0, 200, 255, .2);
+    background-color: rgb(150, 200, 255);
     transition: all .4s;
     padding: 10px;
     color: gray;
@@ -65,8 +66,96 @@ h1 {
     left: calc(50% + 50px);
     -webkit-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, .3);
+    color: white;
+    padding: 8px;
+    border-radius: 25px;
 }
 .directory .selected {
     padding-left: 20px;
     width: 40px;
+}
+.content address {
+    text-align: left;
+    border-bottom: 2px solid rgba(0, 0, 0, .4);
+    padding-bottom: 15px;
+}
+.content address:last-child {
+    border-bottom: 0;
+}
+.content h1 {
+    text-align: left;
+}
+.weather {
+    float: right;
+}
+.weather img {
+    vertical-align: middle;
+}
+.remove, .update, .add, .cancel {
+    outline: 0;
+    color: white;
+    border-radius: 8px;
+    border: 0;
+    padding: 3px;
+    padding-left: 10px;
+    padding-right: 10px;
+    box-sizing: border-box;
+    box-shadow: 2px 2px rgba(0, 0, 0, .4);
+    transition: none;
+    cursor: pointer;
+}
+.cancel {
+    background-color: gray;
+}
+.add {
+    background-color: green;
+}
+.remove {
+    background-color: red;
+}
+.update {
+    background-color: rgba(0, 200, 255, .4);
+}
+.remove:active, .update:active, .add:active {
+    box-shadow: inset 2px 2px rgba(0, 0, 0, .4);
+}
+.address {
+    white-space: nowrap;
+}
+label {
+    display: block;
+}
+label span {
+    width: 100px;
+    display: inline-block;
+}
+label input {
+    border-radius: 3px;
+    transition: all .2s;
+}
+label input:focus {
+    background-color: #FFFFCC;
+    box-shadow: 0px 0px 4px 1px aqua;
+}
+.addr-add {
+    cursor: pointer;
+    text-align: center;
+    font-weight: bold;
+}
+.content.variable {
+    top: 100px;
+    -webkit-transform: translate(-50%, 0);
+    transform: translateX(-50%);
+}
+.unknown {
+    color: red;
+}
+.failure {
+    text-align: center;
+    color: red;
+}
+.success {
+    text-align: center;
+    color: green;
 }

@@ -38,25 +38,31 @@ app.get("/weather", function (req, res) {
 });
 
 app.post("/weatherbook", function (req, res) {
-    db.query("INSERT INTO Weatherbook (firstName, lastName, address) VALUES (?, ?, ?)",
-        [req.body.firstName, req.body.lastName, req.body.address], function (err, data) {
-            if (err) {
-                res.writeHead(400);
-            }
-            else {
-                res.writeHead(201);
-                res.write("" + data.insertId);
-            }
+    if (req.body.lastName && req.body.firstName && req.body.address) {
+        db.query("INSERT INTO Weatherbook (firstName, lastName, address) VALUES (?, ?, ?)",
+            [req.body.firstName, req.body.lastName, req.body.address], function (err, data) {
+                if (err) {
+                    res.writeHead(400);
+                }
+                else {
+                    res.writeHead(201);
+                    res.write("" + data.insertId);
+                }
 
-            res.end();
+                res.end();
 
-            io.sockets.emit("address-added", {
-                wbID: data.insertId,
-                firstName: data.firstName,
-                lastName: data.lastName,
-                address: data.address
+                io.sockets.emit("address-added", {
+                    wbID: data.insertId,
+                    firstName: data.firstName,
+                    lastName: data.lastName,
+                    address: data.address
+                });
             });
-        });
+    }
+    else {
+        res.writeHead(400);
+        res.end();
+    }
 });
 
 app.delete("/weatherbook/:wbID", function (req, res) {
@@ -75,18 +81,24 @@ app.delete("/weatherbook/:wbID", function (req, res) {
 });
 
 app.patch("/weatherbook", function (req, res) {
-    db.query("UPDATE Weatherbook SET firstName = ?, lastName = ?, address = ? WHERE wbID = ?",
-        [req.body.firstName, req.body.lastName, req.body.address, req.body.wbID], function (err, data) {
-            if (err) {
-                res.writeHead(400);
-            }
-            else {
-                res.writeHead(200);
-            }
+    if (req.body.lastName && req.body.firstName && req.body.address) {
+        db.query("UPDATE Weatherbook SET firstName = ?, lastName = ?, address = ? WHERE wbID = ?",
+            [req.body.firstName, req.body.lastName, req.body.address, req.body.wbID], function (err, data) {
+                if (err) {
+                    res.writeHead(400);
+                }
+                else {
+                    res.writeHead(200);
+                }
 
-            res.end();
-            io.sockets.emit("address-updated", req.body);
-        });
+                res.end();
+                io.sockets.emit("address-updated", req.body);
+            });
+    }
+    else {
+        res.writeHead(400);
+        res.end();
+    }
 });
 
 io.sockets.on("connection", function (socket) {

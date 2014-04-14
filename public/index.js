@@ -74,14 +74,16 @@ function ($scope, $http, $timeout, addresses, revealedAddresses, editingAddress)
     });
 
     $scope.removeAddress = function (wbID) {
-        $http.delete("/weatherbook/" + wbID).success(function () {
-            revealedAddresses.removeAddress(wbID);
-            addresses.removeAddress(wbID);
+        if (confirm("Are you sure you want to delete this address?")) {
+            $http.delete("/weatherbook/" + wbID).success(function () {
+                revealedAddresses.removeAddress(wbID);
+                addresses.removeAddress(wbID);
 
-            if (!revealedAddresses.addresses.length) {
-                $scope.state = "home";
-            }
-        });
+                if (!revealedAddresses.addresses.length) {
+                    $scope.state = "home";
+                }
+            });
+        }
     };
 
     $scope.updateAddress = function (address) {
@@ -93,9 +95,15 @@ function ($scope, $http, $timeout, addresses, revealedAddresses, editingAddress)
         editingAddress.address = address.address;
         editingAddress.wbID = address.wbID;
     };
+
+    $scope.addingState = function () {
+        $scope.state = "adding";
+        $scope.revealedAddresses.addresses = [];
+        addresses.lastLetter = "";
+    }
 }]);
 
-app.controller("AddressAddCtrl", ["$scope", "$http", "addresses", "editingAddress", function ($scope, $http, addresses, editingAddress) {
+app.controller("AddressAddCtrl", ["$scope", "$http", "$timeout", "addresses", "editingAddress", function ($scope, $http, $timeout, addresses, editingAddress) {
     $scope.editingAddress = editingAddress;
 
     $scope.addAddress = function () {
@@ -105,35 +113,57 @@ app.controller("AddressAddCtrl", ["$scope", "$http", "addresses", "editingAddres
             address: editingAddress.address,
         };
 
-        if (editingAddress.wbID) {
-            data.wbID = editingAddress.wbID;
+        if (editingAddress.firstName && editingAddress.lastName && editingAddress.address) {
+            $scope.failure = false;
+            if (editingAddress.wbID) {
+                data.wbID = editingAddress.wbID;
 
-            $http({
-                url: "/weatherbook",
-                data: data,
-                method: "PATCH",
-            }).success(function () {
-                addresses.updateAddress(data);
+                $http({
+                    url: "/weatherbook",
+                    data: data,
+                    method: "PATCH",
+                }).success(function () {
+                    addresses.updateAddress(data);
 
-                editingAddress.firstName = "";
-                editingAddress.lastName = "";
-                editingAddress.address = "";
-                editingAddress.wbID = "";
-            });
+                    editingAddress.firstName = "";
+                    editingAddress.lastName = "";
+                    editingAddress.address = "";
+                    editingAddress.wbID = "";
+
+                    $scope.success = "Address updated successfully";
+
+                    $timeout(function () {
+                        $scope.success = "";
+                    }, 2000);
+                });
+            }
+            else {
+                $http.post("/weatherbook", data).success(function (wbID) {
+                    addresses.addresses.push({
+                        wbID: wbID,
+                        firstName: editingAddress.firstName,
+                        lastName: editingAddress.lastName,
+                        address: editingAddress.address
+                    });
+
+                    editingAddress.firstName = "";
+                    editingAddress.lastName = "";
+                    editingAddress.address = "";
+
+                    $scope.success = "Address added successfully";
+
+                    $timeout(function () {
+                        $scope.success = "";
+                    }, 2000);
+                });
+            }
         }
         else {
-            $http.post("/weatherbook", data).success(function (wbID) {
-                addresses.addresses.push({
-                    wbID: wbID,
-                    firstName: editingAddress.firstName,
-                    lastName: editingAddress.lastName,
-                    address: editingAddress.address
-                });
+            $scope.failure = true;
 
-                editingAddress.firstName = "";
-                editingAddress.lastName = "";
-                editingAddress.address = "";
-            });
+            $timeout(function () {
+                $scope.failure = false;
+            }, 2000);
         }
     };
 }]);
@@ -156,11 +186,20 @@ app.controller("DirectoryCtrl", ["$scope", "$http", "addresses", "revealedAddres
 
             filtered.forEach(function (address) {
                 $http.get("/weather?address=" + encodeURIComponent(address.address))
-                    .success(function () {
-                        console.log(arguments);
-                        });
+                    .success(function (weather) {
+                        if (weather.response.error) {
+                            address.weatherUnknown = "Unknown";
+                        }
+                        else {
+                            weather = weather.current_observation;
+                            address.weather = weather.weather + ", " + weather.temp_f + "°";
+                            address.weatherIcon = weather.icon_url;
+                        }
+                    });
             });
         }
+
+        addresses.lastLetter = letter;
     };
 }]);
 

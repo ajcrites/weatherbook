@@ -8,8 +8,8 @@
     <section ng-controller=DirectoryCtrl>
         <nav class=directory>
             <ol>
-                <li ng-repeat="letter in letters" ng-class="{enabled: addresses.filterAddresses(letter).length}"
-                    ng-click="revealAddresses(letter)" reveal>
+                <li ng-repeat="letter in letters" ng-class="{enabled: addresses.filterAddresses(letter).length, selected: addresses.lastLetter == letter}"
+                    ng-click="revealAddresses(letter)">
                     {{letter}}
                 </li>
             </ol>
@@ -17,13 +17,14 @@
     </section>
 
     <section ng-controller=AddressCtrl>
+
         <div ng-show="initialized" class="animate-show">
             <div ng-show="addresses.addresses.length == 0 && state == 'home'" class="animate-show content">
                 <p>
                     You don't have any addresses yet :(
                 </p>
-                <p ng-click="state = 'adding'">
-                    Add Addresses Now
+                <p class=addr-add ng-click="addingState()">
+                    + Add Addresses Now
                 </p>
             </div>
             <div ng-show="addresses.addresses.length && revealedAddresses.addresses.length == 0 && state == 'home'" class="animate-show content">
@@ -31,22 +32,29 @@
                     Click on a letter to display the addresses and weather
                     for people whose last name starts with that letter.
                 </p>
-                <p ng-click="state = 'adding'">
-                    Add More Addresses
+                <p class=addr-add ng-click="addingState()">
+                    + Add More Addresses
                 </p>
             </div>
 
-            <div ng-show="revealedAddresses.addresses.length" class="animate-show content">
+            <div ng-show="revealedAddresses.addresses.length" class="animate-show content variable">
                 <address ng-repeat="addr in revealedAddresses.addresses">
-                    {{addr.firstName}}
-                    {{addr.lastName}}
-                    {{addr.address}}
-                    <button ng-click="removeAddress(addr.wbID)">Remove this address</button>
-                    <button ng-click="updateAddress(addr)">Update this address</button>
+                    <abbr class=weather><span class=unknown>{{addr.weatherUnknown}}</span> {{addr.weather}} <img ng-src="{{addr.weatherIcon}}"></abbr>
+                    <h1>{{addr.firstName}} {{addr.lastName}}</h1>
+                    <div class=address>{{addr.address}}</div>
+                    <button class=remove ng-click="removeAddress(addr.wbID)">Remove this address</button>
+                    <button class=update ng-click="updateAddress(addr)">Update this address</button>
                 </address>
+
+                <p class=addr-add ng-click="addingState()">
+                    + Add More Addresses
+                </p>
             </div>
 
             <div ng-show="state == 'adding' && revealedAddresses.addresses.length == 0" ng-controller="AddressAddCtrl" class="animate-show content">
+                <div ng-show="success" class="animate-show success">{{success}}</div>
+                <div ng-show="failure" class="animate-show failure">Please fill in all fields</div>
+
                 <label>
                     <span>First Name</span>
                     <input type=text required ng-model=editingAddress.firstName>
@@ -60,7 +68,8 @@
                     <input type=text required ng-model=editingAddress.address>
                 </label>
                 <input type=hidden ng-model=editingAddress.wbID>
-                <input type=submit ng-click="addAddress()">
+                <!-- <input class=cancel type=submit value="Cancel" ng-click="cancelAdding()"> -->
+                <input class=add type=submit value="{{editingAddress.wbID ? 'Save Changes' : 'Add Address'}}" ng-click="addAddress()">
             </div>
         </div>
     </section>

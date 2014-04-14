@@ -138,7 +138,7 @@ app.controller("AddressAddCtrl", ["$scope", "$http", "addresses", "editingAddres
     };
 }]);
 
-app.controller("DirectoryCtrl", ["$scope", "addresses", "revealedAddresses", function ($scope, addresses, revealedAddresses) {
+app.controller("DirectoryCtrl", ["$scope", "$http", "addresses", "revealedAddresses", function ($scope, $http, addresses, revealedAddresses) {
     var x;
 
     $scope.letters = [];
@@ -153,6 +153,13 @@ app.controller("DirectoryCtrl", ["$scope", "addresses", "revealedAddresses", fun
         var filtered = addresses.filterAddresses(letter);
         if (filtered.length) {
             revealedAddresses.addresses = filtered;
+
+            filtered.forEach(function (address) {
+                $http.get("/weather?address=" + encodeURIComponent(address.address))
+                    .success(function () {
+                        console.log(arguments);
+                        });
+            });
         }
     };
 }]);

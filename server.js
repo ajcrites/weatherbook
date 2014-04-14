@@ -1,7 +1,8 @@
-var server, db,
+var server, db, wunder,
     io = require("socket.io"),
     express = require("express"),
     bodyParser = require("body-parser"),
+    WunderNodeClient = require("wundernode"),
     http = require("http"),
     path = require("path"),
     mysql = require("mysql2"),
@@ -18,7 +19,23 @@ io = io.listen(server, {log: false});
 
 server.listen(process.env.PORT || 3000);
 
-db = mysql.createConnection(config);
+db = mysql.createConnection(config[env].db);
+
+wunder = new WunderNodeClient(config[env].weather["api-key"], false, 10, "minute");
+
+app.get("/weather", function (req, res) {
+    wunder.conditions(req.query.address, function (err, data) {
+        if (err) {
+            res.writeHead(400);
+        }
+        else {
+            res.writeHead(200);
+            res.write(data);
+        }
+
+        res.end();
+    });
+});
 
 app.post("/weatherbook", function (req, res) {
     db.query("INSERT INTO Weatherbook (firstName, lastName, address) VALUES (?, ?, ?)",

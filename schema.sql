@@ -1,6 +1,4 @@
-DROP SCHEMA IF EXISTS Weatherbook;
-CREATE SCHEMA Weatherbook;
-USE Weatherbook;
+DROP TABLE IF EXISTS Weatherbook;
 
 CREATE TABLE Weatherbook (
   wbID int unsigned not null auto_increment primary key,

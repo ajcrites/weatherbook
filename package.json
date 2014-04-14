@@ -9,6 +9,7 @@
     "mysql2": "~0.11.7",
     "express": "~4.0.0",
     "socket.io": "~0.9.16",
-    "body-parser": "~1.0.1"
+    "body-parser": "~1.0.1",
+    "wundernode": "~0.4.0"
   }
 }

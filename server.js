@@ -19,8 +19,27 @@ io = io.listen(server, {log: false});
 
 server.listen(process.env.PORT || 3000);
 
-// Create DB connection from loaded configuration
-db = mysql.createConnection(config[env].db);
+// Create DB connection from loaded configuration and handle case of
+// lost connection by reconnecting after time
+manageConnection = function () {
+    db = mysql.createConnection(config[env].db);
+
+    db.connect(function (err) {
+        if (err) {
+            console.log("Error in MySQL connection: ", err);
+            setTimeout(handleDisconnect, 2000);
+        }
+    });
+
+    db.on("error", function (err) {
+        if ("PROTOCOL_CONNECTION_LOST" === err.code) {
+            handleDisconnect();
+        }
+        else {
+            throw err;
+        }
+    });
+}();
 
 // Weather API client
 wunder = new WunderNodeClient(config[env].weather["api-key"], false, 10, "minute");
@@ -112,7 +131,6 @@ app.patch("/weatherbook", function (req, res) {
  */
 io.sockets.on("connection", function (socket) {
     db.query("SELECT wbID, firstName, lastName, address FROM Weatherbook", function (err, rows) {
-        console.log(err);
         if (err) {
             socket.emit("db-error", err);
         }

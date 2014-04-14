@@ -112,6 +112,7 @@ app.patch("/weatherbook", function (req, res) {
  */
 io.sockets.on("connection", function (socket) {
     db.query("SELECT wbID, firstName, lastName, address FROM Weatherbook", function (err, rows) {
+        console.log(err);
         if (err) {
             socket.emit("db-error", err);
         }

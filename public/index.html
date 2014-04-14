@@ -15,47 +15,51 @@
     </section>
 
     <section ng-controller=AddressCtrl>
-        <div ng-show="addresses.addresses.length == 0 && state == 'home'" class="animate-show">
-            <p>
-                You don't have any addresses yet :(
-            </p>
-            <p ng-click="state = 'adding'">
-                Add Addresses Now
-            </p>
-        </div>
-        <div ng-show="addresses.addresses.length && revealedAddresses.addresses.length == 0 && state == 'home'" class="animate-show">
-            <p>
-                Click on a letter to display the addresses and weather
-                for people whose last name starts with that letter.
-            </p>
-            <p ng-click="state = 'adding'">
-                Add More Addresses
-            </p>
-        </div>
+        <div ng-show="initialized" class="animate-show">
+            <div ng-show="addresses.addresses.length == 0 && state == 'home'" class="animate-show">
+                <p>
+                    You don't have any addresses yet :(
+                </p>
+                <p ng-click="state = 'adding'">
+                    Add Addresses Now
+                </p>
+            </div>
+            <div ng-show="addresses.addresses.length && revealedAddresses.addresses.length == 0 && state == 'home'" class="animate-show">
+                <p>
+                    Click on a letter to display the addresses and weather
+                    for people whose last name starts with that letter.
+                </p>
+                <p ng-click="state = 'adding'">
+                    Add More Addresses
+                </p>
+            </div>
 
-        <div ng-show="revealedAddresses.addresses.length" class="animate-show">
-            <address ng-repeat="addr in revealedAddresses.addresses">
-                {{addr.firstName}}
-                {{addr.lastName}}
-                {{addr.address}}
-                <button ng-click="removeAddress(addr.wbID)">Remove this address</button>
-            </address>
-        </div>
+            <div ng-show="revealedAddresses.addresses.length" class="animate-show">
+                <address ng-repeat="addr in revealedAddresses.addresses">
+                    {{addr.firstName}}
+                    {{addr.lastName}}
+                    {{addr.address}}
+                    <button ng-click="removeAddress(addr.wbID)">Remove this address</button>
+                    <button ng-click="updateAddress(addr)">Update this address</button>
+                </address>
+            </div>
 
-        <div ng-show="state == 'adding' && revealedAddresses.addresses.length == 0" ng-controller="AddressAddCtrl" class="animate-show">
-            <label>
-                <span>First Name</span>
-                <input type=text required ng-model=firstName>
-            </label>
-            <label>
-                <span>Last Name</span>
-                <input type=text required ng-model=lastName>
-            </label>
-            <label>
-                <span>Address</span>
-                <input type=text required ng-model=address>
-            </label>
-            <input type=submit ng-click="addAddress()">
+            <div ng-show="state == 'adding' && revealedAddresses.addresses.length == 0" ng-controller="AddressAddCtrl" class="animate-show">
+                <label>
+                    <span>First Name</span>
+                    <input type=text required ng-model=editingAddress.firstName>
+                </label>
+                <label>
+                    <span>Last Name</span>
+                    <input type=text required ng-model=editingAddress.lastName>
+                </label>
+                <label>
+                    <span>Address</span>
+                    <input type=text required ng-model=editingAddress.address>
+                </label>
+                <input type=hidden ng-model=editingAddress.wbID>
+                <input type=submit ng-click="addAddress()">
+            </div>
         </div>
     </section>
 </div>

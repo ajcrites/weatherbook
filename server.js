@@ -43,7 +43,6 @@ app.post("/weatherbook", function (req, res) {
 });
 
 app.delete("/weatherbook/:wbID", function (req, res) {
-    console.log(req.params.wbID);
     db.query("DELETE FROM Weatherbook WHERE wbID = ?", [req.params.wbID], function (err, data) {
         if (err) {
             res.writeHead(400);

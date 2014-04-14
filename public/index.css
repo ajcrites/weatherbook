@@ -35,7 +35,7 @@ body {
 .directory li {
     width: 30px;
     text-align: center;
-    background-color: rgb(150, 200, 255);
+    background-color: hsl(210, 60%, 90%);
     transition: all .4s;
     padding: 10px;
     color: gray;
@@ -50,6 +50,7 @@ body {
     border-bottom: 0;
 }
 .directory .enabled {
+    background-color: hsl(210, 100%, 80%);
     color: black;
     font-weight: bold;
     cursor: pointer;

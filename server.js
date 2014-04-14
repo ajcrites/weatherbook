@@ -27,13 +27,13 @@ manageConnection = function () {
     db.connect(function (err) {
         if (err) {
             console.log("Error in MySQL connection: ", err);
-            setTimeout(handleDisconnect, 2000);
+            setTimeout(manageConnection, 2000);
         }
     });
 
     db.on("error", function (err) {
         if ("PROTOCOL_CONNECTION_LOST" === err.code) {
-            handleDisconnect();
+            manageConnection();
         }
         else {
             throw err;

@@ -21,7 +21,7 @@ server.listen(process.env.PORT || 3000);
 
 // Create DB connection from loaded configuration and handle case of
 // lost connection by reconnecting after time
-manageConnection = function () {
+function manageConnection() {
     db = mysql.createConnection(config[env].db);
 
     db.connect(function (err) {
@@ -39,7 +39,9 @@ manageConnection = function () {
             throw err;
         }
     });
-}();
+}
+
+manageConnection();
 
 // Weather API client
 wunder = new WunderNodeClient(config[env].weather["api-key"], false, 10, "minute");

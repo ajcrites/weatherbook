@@ -1,8 +1,10 @@
+body {
+    margin: 0;
+    margin-left: 50px;
+    font-family: "Helvetica Neue", sans-serif;
+}
 [ng-cloak] {
     display: none !important;
-}
-.enabled {
-    color: red;
 }
 
 .animate-show {
@@ -17,4 +19,54 @@
 
 .animate-show.ng-hide {
   opacity:0;
+}
+
+.directory {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.directory ol {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+.directory li {
+    width: 30px;
+    text-align: center;
+    background-color: rgba(0, 200, 255, .2);
+    transition: all .4s;
+    padding: 10px;
+    color: gray;
+    cursor: default;
+    box-sizing: border-box;
+    border: 1px solid darkgray;
+    border-top: 0;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+.directory li:last-child {
+    border-bottom: 0;
+}
+.directory .enabled {
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+}
+.enabled:hover {
+    background-color: rgba(0, 200, 255, .4);
+}
+h1 {
+    text-align: center;
+}
+.content {
+    position: absolute;
+    top: 50%;
+    left: calc(50% + 50px);
+    -webkit-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+.directory .selected {
+    padding-left: 20px;
+    width: 40px;
 }

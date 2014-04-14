@@ -6,17 +6,19 @@
     <h1>Welcome to Weatherbook</h1>
 
     <section ng-controller=DirectoryCtrl>
-        <ol>
-            <li ng-repeat="letter in letters" ng-class="{enabled: addresses.filterAddresses(letter).length}"
-                ng-click="revealAddresses(letter)">
-                {{letter}}
-            </li>
-        </ol>
+        <nav class=directory>
+            <ol>
+                <li ng-repeat="letter in letters" ng-class="{enabled: addresses.filterAddresses(letter).length}"
+                    ng-click="revealAddresses(letter)" reveal>
+                    {{letter}}
+                </li>
+            </ol>
+        </nav>
     </section>
 
     <section ng-controller=AddressCtrl>
         <div ng-show="initialized" class="animate-show">
-            <div ng-show="addresses.addresses.length == 0 && state == 'home'" class="animate-show">
+            <div ng-show="addresses.addresses.length == 0 && state == 'home'" class="animate-show content">
                 <p>
                     You don't have any addresses yet :(
                 </p>
@@ -24,7 +26,7 @@
                     Add Addresses Now
                 </p>
             </div>
-            <div ng-show="addresses.addresses.length && revealedAddresses.addresses.length == 0 && state == 'home'" class="animate-show">
+            <div ng-show="addresses.addresses.length && revealedAddresses.addresses.length == 0 && state == 'home'" class="animate-show content">
                 <p>
                     Click on a letter to display the addresses and weather
                     for people whose last name starts with that letter.
@@ -34,7 +36,7 @@
                 </p>
             </div>
 
-            <div ng-show="revealedAddresses.addresses.length" class="animate-show">
+            <div ng-show="revealedAddresses.addresses.length" class="animate-show content">
                 <address ng-repeat="addr in revealedAddresses.addresses">
                     {{addr.firstName}}
                     {{addr.lastName}}
@@ -44,7 +46,7 @@
                 </address>
             </div>
 
-            <div ng-show="state == 'adding' && revealedAddresses.addresses.length == 0" ng-controller="AddressAddCtrl" class="animate-show">
+            <div ng-show="state == 'adding' && revealedAddresses.addresses.length == 0" ng-controller="AddressAddCtrl" class="animate-show content">
                 <label>
                     <span>First Name</span>
                     <input type=text required ng-model=editingAddress.firstName>

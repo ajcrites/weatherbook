@@ -163,3 +163,11 @@ app.controller("DirectoryCtrl", ["$scope", "$http", "addresses", "revealedAddres
         }
     };
 }]);
+
+app.directive("reveal", function () {
+    return function (scope, elem, attr) {
+        elem.bind("click", function () {
+            elem.addClass("selected");
+        });
+    };
+});

@@ -1,6 +1,9 @@
 var socket = io.connect("//" + window.location.host),
     app = angular.module("weatherbook", ["ngAnimate"]);
 
+/**
+ * Logic to remove address by wbID from address services upon deletion
+ */
 function removeAddress(wbID) {
     var self = this;
 
@@ -11,12 +14,18 @@ function removeAddress(wbID) {
     });
 }
 
+/**
+ * Required to send JSON data via PATCH
+ */
 app.config(["$httpProvider", function ($httpProvider) {
     $httpProvider.defaults.headers.patch = {
         'Content-Type': 'application/json;charset=utf-8'
     }
 }]);
 
+/**
+ * Used to keep update data between editing and other states
+ */
 app.service("editingAddress", function () {
     this.firstName = "";
     this.lastName = "";
@@ -24,15 +33,22 @@ app.service("editingAddress", function () {
     this.wbID = "";
 });
 
+/**
+ * List of addresses that are displayed to the user
+ */
 app.service("revealedAddresses", function () {
     this.addresses = [];
 
     this.removeAddress = removeAddress;
 });
 
+/**
+ * List of all addresses with functionality to locall filter/update/remove
+ */
 app.service("addresses", [function () {
     this.addresses = [];
 
+    // Use last name letter comparison
     this.filterAddresses = function (letter) {
         var filtered = [];
         this.addresses.forEach(function (address) {
@@ -56,6 +72,9 @@ app.service("addresses", [function () {
     };
 }]);
 
+/**
+ * Main display controller
+ */
 app.controller("AddressCtrl",["$scope", "$http", "$timeout", "addresses", "revealedAddresses", "editingAddress",
 function ($scope, $http, $timeout, addresses, revealedAddresses, editingAddress) {
     $scope.addresses = addresses;
@@ -86,9 +105,10 @@ function ($scope, $http, $timeout, addresses, revealedAddresses, editingAddress)
         }
     };
 
+    // Change to the update state for the provided address.  Same as the adding
+    // state, but we include wbID for updates and fill in the form with defaults
     $scope.updateAddress = function (address) {
-        $scope.state = "adding";
-        $scope.revealedAddresses.addresses = [];
+        $scope.addingState();
 
         editingAddress.firstName = address.firstName;
         editingAddress.lastName = address.lastName;
@@ -96,6 +116,7 @@ function ($scope, $http, $timeout, addresses, revealedAddresses, editingAddress)
         editingAddress.wbID = address.wbID;
     };
 
+    // Change to the 'adding' state -- remove revealed addresses and update display
     $scope.addingState = function () {
         $scope.state = "adding";
         $scope.revealedAddresses.addresses = [];
@@ -103,6 +124,9 @@ function ($scope, $http, $timeout, addresses, revealedAddresses, editingAddress)
     }
 }]);
 
+/**
+ * Controller that handles adding of addresses
+ */
 app.controller("AddressAddCtrl", ["$scope", "$http", "$timeout", "addresses", "editingAddress", function ($scope, $http, $timeout, addresses, editingAddress) {
     $scope.editingAddress = editingAddress;
 
@@ -113,6 +137,7 @@ app.controller("AddressAddCtrl", ["$scope", "$http", "$timeout", "addresses", "e
             address: editingAddress.address,
         };
 
+        // *Validation*
         if (editingAddress.firstName && editingAddress.lastName && editingAddress.address) {
             $scope.failure = false;
             if (editingAddress.wbID) {
@@ -168,17 +193,26 @@ app.controller("AddressAddCtrl", ["$scope", "$http", "$timeout", "addresses", "e
     };
 }]);
 
+/**
+ * Alphabet list that displays addresses by last name
+ */
 app.controller("DirectoryCtrl", ["$scope", "$http", "addresses", "revealedAddresses", function ($scope, $http, addresses, revealedAddresses) {
     var x;
 
     $scope.letters = [];
 
+    /**
+     * 65 = A; just build a list of A-Z letters
+     */
     for (x = 65; x < 65 + 26; x++) {
         $scope.letters.push(String.fromCharCode(x));
     }
 
     $scope.addresses = addresses;
 
+    /**
+     * Update revealed addresses of the selected letter
+     */
     $scope.revealAddresses = function (letter) {
         var filtered = addresses.filterAddresses(letter);
         if (filtered.length) {
@@ -199,14 +233,7 @@ app.controller("DirectoryCtrl", ["$scope", "$http", "addresses", "revealedAddres
             });
         }
 
+        // Used to show the 'selected' state of a particular letter
         addresses.lastLetter = letter;
     };
 }]);
-
-app.directive("reveal", function () {
-    return function (scope, elem, attr) {
-        elem.bind("click", function () {
-            elem.addClass("selected");
-        });
-    };
-});

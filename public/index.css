@@ -159,3 +159,17 @@ label input:focus {
     text-align: center;
     color: green;
 }
+
+@media only screen and (max-width: 480px), screen and (max-width: 800px) and (orientation:landscape) {
+    .content, .content.variable {
+        left: 50px;
+        -webkit-transform: none;
+        transform: none;
+        width: calc(100% - 100px);
+    }
+    button {
+        height: 50px;
+        font-size: 120%;
+        margin-bottom: 15px;
+    }
+}

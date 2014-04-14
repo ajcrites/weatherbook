@@ -19,10 +19,13 @@ io = io.listen(server, {log: false});
 
 server.listen(process.env.PORT || 3000);
 
+// Create DB connection from loaded configuration
 db = mysql.createConnection(config[env].db);
 
+// Weather API client
 wunder = new WunderNodeClient(config[env].weather["api-key"], false, 10, "minute");
 
+// Get weather for the provided address (generally acquired from a DB entry)
 app.get("/weather", function (req, res) {
     wunder.conditions(req.query.address, function (err, data) {
         if (err) {
@@ -37,6 +40,7 @@ app.get("/weather", function (req, res) {
     });
 });
 
+// Create an address entry
 app.post("/weatherbook", function (req, res) {
     if (req.body.lastName && req.body.firstName && req.body.address) {
         db.query("INSERT INTO Weatherbook (firstName, lastName, address) VALUES (?, ?, ?)",
@@ -65,6 +69,7 @@ app.post("/weatherbook", function (req, res) {
     }
 });
 
+// Delete the provided address entry
 app.delete("/weatherbook/:wbID", function (req, res) {
     db.query("DELETE FROM Weatherbook WHERE wbID = ?", [req.params.wbID], function (err, data) {
         if (err) {
@@ -80,6 +85,7 @@ app.delete("/weatherbook/:wbID", function (req, res) {
     });
 });
 
+// Update an address entry.  wbID is included in the request body
 app.patch("/weatherbook", function (req, res) {
     if (req.body.lastName && req.body.firstName && req.body.address) {
         db.query("UPDATE Weatherbook SET firstName = ?, lastName = ?, address = ? WHERE wbID = ?",
@@ -101,6 +107,9 @@ app.patch("/weatherbook", function (req, res) {
     }
 });
 
+/**
+ * Emit changes over the socket
+ */
 io.sockets.on("connection", function (socket) {
     db.query("SELECT wbID, firstName, lastName, address FROM Weatherbook", function (err, rows) {
         if (err) {
@@ -112,4 +121,3 @@ io.sockets.on("connection", function (socket) {
     });
 
 });
-
